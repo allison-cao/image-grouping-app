@@ -6,13 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <style>
     /* Responsive styling */
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
     #camera-container {
       position: relative;
       width: 90vw; /* 90% of the viewport width */
-      height: auto; /* Maintain aspect ratio */
-      max-width: 800px; /* Limit to 800px maximum */
+      height: auto;
+      max-width: 800px;
       margin: 0 auto;
+      /* Make sure the aspect ratio is maintained */
     }
     #camera {
       width: 100%;
@@ -22,12 +23,12 @@
     /* Style for overlay buttons */
     .overlay-button {
       position: absolute;
-      bottom: 20px; /* Place buttons at the bottom of the video */
+      bottom: 10px; /* Place buttons at the bottom of the video feed */
       left: 50%;
       transform: translateX(-50%);
       display: flex;
       gap: 10px;
-      z-index: 10; /* Ensure buttons stay on top of the video */
+      z-index: 10; /* Ensure buttons are on top */
     }
     .overlay-button button {
       padding: 15px 30px;
