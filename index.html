@@ -8,32 +8,35 @@
     /* Responsive styling */
     body { font-family: Arial, sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
     
+    /* Camera container to hold video and buttons */
     #camera-container {
       position: relative;
-      width: 90vw; /* 90% of the viewport width */
-      max-width: 800px;
+      width: 100%; /* Make it responsive to the screen width */
+      max-width: 800px; /* Maximum width for larger screens */
+      height: auto;
       margin: 0 auto;
-      /* Maintain a 16:9 aspect ratio */
-      height: calc(90vw * (16 / 9));
     }
 
+    /* Video to be a square shape, fixed dimensions */
     #camera {
       width: 100%;
       height: 100%;
+      aspect-ratio: 1 / 1; /* Ensure square aspect ratio */
       object-fit: cover;
     }
 
-    /* Style for overlay buttons */
+    /* Overlay buttons container */
     .overlay-button {
       position: absolute;
-      bottom: 10px; /* Place buttons at the bottom of the video feed */
+      bottom: 10px; /* Position buttons near the bottom of the video */
       left: 50%;
       transform: translateX(-50%);
       display: flex;
       gap: 10px;
-      z-index: 10; /* Ensure buttons are on top */
+      z-index: 10; /* Ensure buttons are above the video */
     }
 
+    /* Styling for buttons */
     .overlay-button button {
       padding: 15px 30px;
       font-size: 18px;
@@ -44,20 +47,22 @@
       box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     }
 
-    /* Capture and Finish buttons (Green) */
+    /* Green buttons for capture and finish */
     .capture, .finish {
       background-color: #28a745;
     }
 
-    /* Redo button (Red) */
+    /* Red button for redo */
     .redo {
       background-color: #dc3545;
     }
 
+    /* Hover effect */
     .overlay-button button:hover {
       opacity: 0.9;
     }
 
+    /* Styling for image groups */
     #groups {
       margin-top: 20px;
     }
