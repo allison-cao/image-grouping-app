@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Image Grouping App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Responsive styling */
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    #camera { display: none; width: 100%; max-width: 400px; }
+    #groups { margin-top: 20px; }
+    .group { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
+    .image { width: 100px; height: 100px; object-fit: cover; margin: 5px; }
+    button { margin-right: 10px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+  <h1>Image Grouping App</h1>
+  <button id="start-camera">Start Camera</button>
+  <button id="capture-image" disabled>Capture Image</button>
+  <button id="create-group">Create New Group</button>
+  <button id="export-data">Export Data</button>
+
+  <video id="camera" autoplay playsinline></video>
+  <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+
+  <div id="groups"></div>
+
+  <!-- Add JSZip script -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+
+  <!-- Your app's JavaScript -->
+  <script src="app.js"></script>
+</body>
+</html>
