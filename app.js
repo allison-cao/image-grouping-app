@@ -14,19 +14,25 @@ let currentGroup = null;
 let groupIdCounter = 0;
 let groups = {};
 
-// Start the camera automatically when the page loads
+// Start the camera automatically when the page loads with high resolution
 window.onload = async () => {
   await startCamera();
   createNewGroup(); // Automatically create a new group on page load
 };
 
-// Function to start the camera
+// Function to start the camera with 4K resolution constraints and fallbacks
 async function startCamera() {
+  const videoConstraints = {
+    video: {
+      facingMode: 'environment', // Use rear camera
+      width: { ideal: 3840, max: 3840, min: 1280 }, // Request 4K (3840x2160), fallback to lower if unsupported
+      height: { ideal: 2160, max: 2160, min: 720 }
+    }
+  };
+
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     try {
-      currentStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' }, // Rear camera
-      });
+      currentStream = await navigator.mediaDevices.getUserMedia(videoConstraints);
       video.srcObject = currentStream;
       video.style.display = 'block';
     } catch (err) {
