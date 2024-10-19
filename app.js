@@ -2,10 +2,9 @@
 const JSZip = window.JSZip;
 
 // Elements
-const startCameraBtn = document.getElementById('start-camera');
+const finishGroupBtn = document.getElementById('finish-group');
 const captureImageBtn = document.getElementById('capture-image');
-const createGroupBtn = document.getElementById('create-group');
-const exportDataBtn = document.getElementById('export-data');
+const redoGroupBtn = document.getElementById('redo-group');
 const video = document.getElementById('camera');
 const canvas = document.getElementById('canvas');
 const groupsContainer = document.getElementById('groups');
@@ -15,8 +14,14 @@ let currentGroup = null;
 let groupIdCounter = 0;
 let groups = {};
 
-// Start the camera
-startCameraBtn.addEventListener('click', async () => {
+// Start the camera automatically when the page loads
+window.onload = async () => {
+  await startCamera();
+  createNewGroup(); // Automatically create a new group on page load
+};
+
+// Function to start the camera
+async function startCamera() {
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     try {
       currentStream = await navigator.mediaDevices.getUserMedia({
@@ -24,7 +29,6 @@ startCameraBtn.addEventListener('click', async () => {
       });
       video.srcObject = currentStream;
       video.style.display = 'block';
-      captureImageBtn.disabled = false;
     } catch (err) {
       console.error('Error accessing the camera:', err);
       alert('Error accessing the camera. Please ensure you have granted permission and are using Safari on iOS 11.3 or later.');
@@ -32,12 +36,26 @@ startCameraBtn.addEventListener('click', async () => {
   } else {
     alert('Camera not supported on this device.');
   }
-});
+}
+
+// Automatically create a new group without prompting the user
+function createNewGroup() {
+  groupIdCounter++;
+  const groupId = `group-${groupIdCounter}`;
+  groups[groupId] = [];
+  currentGroup = { id: groupId, images: [] };
+  renderGroups();
+  
+  // Enable buttons for capturing, finishing, and redoing the group
+  captureImageBtn.disabled = false;
+  finishGroupBtn.disabled = false;
+  redoGroupBtn.disabled = false;
+}
 
 // Capture image
 captureImageBtn.addEventListener('click', () => {
   if (!currentGroup) {
-    alert('Please create a group first.');
+    alert('No active group. Please refresh the page.');
     return;
   }
 
@@ -48,25 +66,32 @@ captureImageBtn.addEventListener('click', () => {
   addImageToGroup(currentGroup.id, imageData);
 });
 
-// Create a new group
-createGroupBtn.addEventListener('click', () => {
-  groupIdCounter++;
-  const groupId = `group-${groupIdCounter}`;
-  groups[groupId] = [];
-  currentGroup = { id: groupId, images: [] };
-  renderGroups();
+// Redo current group (clear all images in the group)
+redoGroupBtn.addEventListener('click', () => {
+  if (currentGroup) {
+    clearGroupImages(currentGroup.id);
+  } else {
+    alert('No active group to clear.');
+  }
 });
 
-// Export data to a ZIP file
-exportDataBtn.addEventListener('click', () => {
-  exportData();
+// Finish current group and export as ZIP
+finishGroupBtn.addEventListener('click', () => {
+  if (currentGroup && groups[currentGroup.id].length > 0) {
+    exportGroupAsZip(currentGroup.id);
+  } else {
+    alert('No images to export in the current group.');
+  }
 });
+
+// Clear all images in the current group without creating a new group
+function clearGroupImages(groupId) {
+  groups[groupId] = [];
+  renderGroups();
+}
 
 function addImageToGroup(groupId, imageData) {
   groups[groupId].push(imageData);
-  if (groups[groupId].length >= 5) {
-    captureImageBtn.disabled = true;
-  }
   renderGroups();
 }
 
@@ -91,32 +116,25 @@ function renderGroups() {
   }
 }
 
-function exportData() {
+function exportGroupAsZip(groupId) {
   const zip = new JSZip();
 
-  // Add group data as a JSON file
-  const dataStr = JSON.stringify(groups, null, 2);
-  zip.file('groups.json', dataStr);
-
   // Add images to the ZIP
-  Object.keys(groups).forEach(groupId => {
-    const groupFolder = zip.folder(groupId);
+  const groupFolder = zip.folder(groupId);
+  groups[groupId].forEach((imageData, index) => {
+    // Convert base64 to binary data
+    const base64Data = imageData.replace(/^data:image\/(png|jpeg);base64,/, '');
+    const imgBuffer = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
 
-    groups[groupId].forEach((imageData, index) => {
-      // Convert base64 to binary data
-      const base64Data = imageData.replace(/^data:image\/(png|jpeg);base64,/, '');
-      const imgBuffer = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+    // Determine image extension
+    const ext = imageData.startsWith('data:image/png') ? 'png' : 'jpeg';
 
-      // Determine image extension
-      const ext = imageData.startsWith('data:image/png') ? 'png' : 'jpeg';
-
-      groupFolder.file(`image_${index + 1}.${ext}`, imgBuffer, { binary: true });
-    });
+    groupFolder.file(`image_${index + 1}.${ext}`, imgBuffer, { binary: true });
   });
 
   // Generate the ZIP file and trigger download
   zip.generateAsync({ type: 'blob' }).then(function(content) {
-    const filename = `image_groups_${Date.now()}.zip`;
+    const filename = `image_group_${Date.now()}.zip`;
 
     // Create a link to download the ZIP file
     const link = document.createElement('a');
@@ -127,11 +145,10 @@ function exportData() {
     // Clean up
     URL.revokeObjectURL(link.href);
 
-    alert('Data exported and ready for download.');
-
-    // Optionally, clear the data after export
+    // Clear the old group and automatically create a new group
     groups = {};
     renderGroups();
+    createNewGroup(); // Automatically start a new group
   }).catch(function(error) {
     console.error('Error generating ZIP file:', error);
     alert('Failed to export data.');
