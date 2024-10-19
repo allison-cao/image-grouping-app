@@ -17,13 +17,13 @@
 <body>
 
   <h1>Image Grouping App</h1>
-  <button id="start-camera">Start Camera</button>
-  <button id="capture-image" disabled>Capture Image</button>
-  <button id="create-group">Create New Group</button>
-  <button id="export-data">Export Data</button>
-
+  
   <video id="camera" autoplay playsinline></video>
   <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+
+  <button id="capture-image" disabled>Capture Image</button>
+  <button id="finish-group" disabled>Finish Group</button>
+  <button id="redo-group" disabled>Redo Group</button>
 
   <div id="groups"></div>
 
