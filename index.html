@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <style>
     /* Responsive styling */
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; overflow: hidden; }
     #camera-container {
       position: relative;
       width: 90vw; /* 90% of the viewport width */
@@ -33,13 +33,20 @@
       font-size: 18px;
       border: none;
       border-radius: 8px;
-      background-color: rgba(255, 255, 255, 0.8);
-      color: #000;
+      color: #fff;
       cursor: pointer;
       box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     }
+    /* Capture and Finish buttons (Green) */
+    .capture, .finish {
+      background-color: #28a745;
+    }
+    /* Redo button (Red) */
+    .redo {
+      background-color: #dc3545;
+    }
     .overlay-button button:hover {
-      background-color: rgba(255, 255, 255, 1);
+      opacity: 0.9;
     }
     #groups {
       margin-top: 20px;
@@ -64,9 +71,9 @@
     <canvas id="canvas" style="display:none;"></canvas>
 
     <div class="overlay-button">
-      <button id="capture-image" disabled>Capture Image</button>
-      <button id="finish-group" disabled>Finish Group</button>
-      <button id="redo-group" disabled>Redo Group</button>
+      <button id="capture-image" class="capture" disabled>📸</button>
+      <button id="finish-group" class="finish" disabled>📥</button>
+      <button id="redo-group" class="redo" disabled>🔄</button>
     </div>
   </div>
 
