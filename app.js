@@ -172,3 +172,13 @@ function exportGroupAsZip(groupId) {
     alert('Failed to export data.');
   });
 }
+
+// Prevent double-tap zoom but allow scrolling
+let lastTouchEnd = 0;
+document.addEventListener('touchend', function (event) {
+  const now = new Date().getTime();
+  if (now - lastTouchEnd <= 300) {
+    event.preventDefault(); // Prevent zoom on double-tap
+  }
+  lastTouchEnd = now;
+}, false);
