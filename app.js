@@ -25,7 +25,7 @@ async function startCamera() {
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     try {
       currentStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' },
+        video: { facingMode: 'environment' }, // Rear camera
       });
       video.srcObject = currentStream;
       video.style.display = 'block';
@@ -59,10 +59,22 @@ captureImageBtn.addEventListener('click', () => {
     return;
   }
 
+  // Get the native resolution of the video feed
+  const videoWidth = video.videoWidth;
+  const videoHeight = video.videoHeight;
+  
+  // Set the canvas size to the video feed's resolution (max resolution of camera)
+  canvas.width = videoWidth;
+  canvas.height = videoHeight;
+
+  // Draw the video feed onto the canvas with its native resolution
   const context = canvas.getContext('2d');
-  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  context.drawImage(video, 0, 0, videoWidth, videoHeight);
+
+  // Get the image data from the canvas
   const imageData = canvas.toDataURL('image/png');
 
+  // Add the captured high-resolution image to the group
   addImageToGroup(currentGroup.id, imageData);
 });
 
