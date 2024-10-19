@@ -22,11 +22,12 @@
     /* Style for overlay buttons */
     .overlay-button {
       position: absolute;
-      bottom: 20px;
+      bottom: 20px; /* Place buttons at the bottom of the video */
       left: 50%;
       transform: translateX(-50%);
       display: flex;
       gap: 10px;
+      z-index: 10; /* Ensure buttons stay on top of the video */
     }
     .overlay-button button {
       padding: 15px 30px;
