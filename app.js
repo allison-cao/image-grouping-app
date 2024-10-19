@@ -77,11 +77,10 @@ captureImageBtn.addEventListener('click', () => {
   const context = canvas.getContext('2d');
   context.drawImage(video, 0, 0, videoWidth, videoHeight);
 
-  // Get the image data from the canvas
-  const imageData = canvas.toDataURL('image/png');
-
-  // Add the captured high-resolution image to the group
-  addImageToGroup(currentGroup.id, imageData);
+  // Convert canvas to Blob (instead of Base64)
+  canvas.toBlob(function(blob) {
+    addImageToGroup(currentGroup.id, blob); // Pass Blob instead of base64
+  }, 'image/png');
 });
 
 // Redo current group (clear all images in the group)
@@ -108,8 +107,8 @@ function clearGroupImages(groupId) {
   renderGroups();
 }
 
-function addImageToGroup(groupId, imageData) {
-  groups[groupId].push(imageData);
+function addImageToGroup(groupId, imageBlob) {
+  groups[groupId].push(imageBlob); // Store Blob objects instead of base64 strings
   renderGroups();
 }
 
@@ -123,9 +122,10 @@ function renderGroups() {
     title.textContent = `Group ${groupId}`;
     groupDiv.appendChild(title);
 
-    groups[groupId].forEach((imageData, index) => {
+    groups[groupId].forEach((blob, index) => {
       const img = document.createElement('img');
-      img.src = imageData;
+      const url = URL.createObjectURL(blob);
+      img.src = url;
       img.className = 'image';
       groupDiv.appendChild(img);
     });
@@ -139,15 +139,8 @@ function exportGroupAsZip(groupId) {
 
   // Add images to the ZIP
   const groupFolder = zip.folder(groupId);
-  groups[groupId].forEach((imageData, index) => {
-    // Convert base64 to binary data
-    const base64Data = imageData.replace(/^data:image\/(png|jpeg);base64,/, '');
-    const imgBuffer = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
-
-    // Determine image extension
-    const ext = imageData.startsWith('data:image/png') ? 'png' : 'jpeg';
-
-    groupFolder.file(`image_${index + 1}.${ext}`, imgBuffer, { binary: true });
+  groups[groupId].forEach((blob, index) => {
+    groupFolder.file(`image_${index + 1}.png`, blob); // Add Blob directly to ZIP file
   });
 
   // Generate the ZIP file and trigger download
@@ -172,13 +165,3 @@ function exportGroupAsZip(groupId) {
     alert('Failed to export data.');
   });
 }
-
-// Prevent double-tap zoom but allow scrolling
-let lastTouchEnd = 0;
-document.addEventListener('touchend', function (event) {
-  const now = new Date().getTime();
-  if (now - lastTouchEnd <= 300) {
-    event.preventDefault(); // Prevent zoom on double-tap
-  }
-  lastTouchEnd = now;
-}, false);
