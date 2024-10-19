@@ -14,19 +14,19 @@ let currentGroup = null;
 let groupIdCounter = 0;
 let groups = {};
 
-// Start the camera automatically when the page loads with high resolution
+// Start the camera automatically when the page loads with 1080p resolution
 window.onload = async () => {
   await startCamera();
   createNewGroup(); // Automatically create a new group on page load
 };
 
-// Function to start the camera with 4K resolution constraints and fallbacks
+// Function to start the camera with 1080p resolution constraints
 async function startCamera() {
   const videoConstraints = {
     video: {
       facingMode: 'environment', // Use rear camera
-      width: { ideal: 3840, max: 3840, min: 1280 }, // Request 4K (3840x2160), fallback to lower if unsupported
-      height: { ideal: 2160, max: 2160, min: 720 }
+      width: { ideal: 1920 },    // Request 1080p resolution (1920x1080)
+      height: { ideal: 1080 }
     }
   };
 
